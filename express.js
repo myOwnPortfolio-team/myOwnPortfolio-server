@@ -8,16 +8,25 @@ const slug = require('slug');
 
 const app = express();
 const port = 3000;
-const configDir = './dist/config';
+const pwd = process.cwd();
+const configDir = `${pwd}/dist/config`;
+const webDir = `${pwd}/dist/web`;
 const slugConfig = {
   lower: true,
   replacement: '_',
 };
 
-const runDocker = (res) => {
+const runDocker = (res, configName) => {
+  const configPath = `${configDir}/${configName}`;
+  const webPath = `${webDir}/${configName}`;
+  const containerName = `core-${configName}`;
+  if (fs.existsSync(webPath)) fs.removeSync(webPath);
+
   childProcess.exec(
-    'docker run macbootglass/myownportfolio-core sleep 0.5 && echo "done"',
+    `docker run --name=${containerName} --volume ${configPath}:/root/app/json_config --volume ${webPath}:/root/dist macbootglass/myownportfolio-core`,
     (error, stdout, stderr) => {
+      childProcess.exec(`docker rm ${containerName}`);
+
       if (error) res.json({
         status: 0,
         message: stderr,
@@ -36,18 +45,19 @@ const createModuleConfiguration = (obj, path, moduleName) => {
   fs.writeJsonSync(`${path}/style/${moduleName}.json`, obj.style);
 };
 
-const createPorfolioConfiguration = (conf) => {
-  const path = `${configDir}/${slug(conf.name, slugConfig)}`;
+const createPorfolioConfiguration = (config, configName) => {
+  const path = `${configDir}/${configName}`;
+
   if (fs.existsSync(path)) fs.removeSync(path);
   fs.mkdirsSync(path);
-  fs.writeJsonSync(`${path}/app_properties.json`, conf.app_properties);
+  fs.writeJsonSync(`${path}/app_properties.json`, config.app_properties);
   fs.mkdirsSync(`${path}/content`);
   fs.mkdirsSync(`${path}/properties`);
   fs.mkdirsSync(`${path}/style`);
 
   const moduleList = [];
-  for (let i = 0; i < conf.modules.length; i++) {
-    const module = conf.modules[i];
+  for (let i = 0; i < config.modules.length; i++) {
+    const module = config.modules[i];
     const formattedModuleName = slug(module.name, slugConfig);
 
     createModuleConfiguration(module, path, formattedModuleName);
@@ -70,6 +80,9 @@ app.listen(port, () => {
 });
 
 app.post('/portfolio', (req, res) => {
-  createPorfolioConfiguration(req.body);
-  runDocker(res);
+  const config = req.body;
+  const configFormattedName = slug(config.name, slugConfig);
+
+  createPorfolioConfiguration(config, configFormattedName);
+  runDocker(res, configFormattedName);
 });
