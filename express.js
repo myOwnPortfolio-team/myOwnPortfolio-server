@@ -1,16 +1,25 @@
-/* eslint no-console: "off", curly: "off" */
+/* eslint curly: "off" */
 
 const express = require('express');
 const bodyParser = require('body-parser');
 const childProcess = require('child_process');
+const winston = require('winston');
+
+if (process.env.LOG_LEVEL) {
+  winston.level = process.env.LOG_LEVEL;
+}
 
 const app = express();
+const host = 'localhost';
 const port = 3000;
 
 app.use(bodyParser.json());
 
-app.listen(port, () => {
-  console.log(`Server listening on port ${port} !`);
+const server = app.listen(port, host, () => {
+  winston.log('info', 'Server listening : ', {
+    address: server.address().address,
+    port: server.address().port,
+  });
 });
 
 app.post('/portfolio', (req, res) => {
