@@ -1,10 +1,12 @@
-/* eslint no-console: "off" */
+/* eslint no-console: "off", curly: "off" */
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const childProcess = require('child_process');
 
 const app = express();
 const port = 3000;
+
 app.use(bodyParser.json());
 
 app.listen(port, () => {
@@ -12,6 +14,17 @@ app.listen(port, () => {
 });
 
 app.post('/portfolio', (req, res) => {
-  console.log(req.body);
-  res.json({ status: 1 });
+  childProcess.exec(
+    'docker run macbootglass/myownportfolio-core sleep 5 && echo "done"',
+    (error, stdout, stderr) => {
+      if (error) res.json({
+        status: 0,
+        message: stderr,
+      });
+      else res.json({
+        status: 1,
+        message: stdout,
+      });
+    },
+  );
 });
