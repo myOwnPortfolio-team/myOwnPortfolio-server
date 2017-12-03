@@ -1,5 +1,7 @@
 /* eslint curly: "off" */
 
+require('./auth/client_auth'); // WebSocket Server
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const childProcess = require('child_process');
@@ -17,6 +19,7 @@ app.use(bodyParser.json());
 
 const server = app.listen(port, host, () => {
   winston.log('info', 'Server listening : ', {
+    date: new Date(),
     address: server.address().address,
     port: server.address().port,
   });
