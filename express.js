@@ -1,15 +1,17 @@
 /* eslint no-console: "off" */
 
 const express = require('express');
-// const opener = require('opener');
+const bodyParser = require('body-parser');
 
 const app = express();
 const port = 3000;
-
-app.use('/', express.static('dist'));
+app.use(bodyParser.json());
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port} !`);
 });
 
-// opener('http://localhost:' + port + '/');
+app.post('/portfolio', (req, res) => {
+  console.log(req.body);
+  res.json({ status: 1 });
+});
