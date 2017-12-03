@@ -1,0 +1,8 @@
+{
+  "extends": "airbnb",
+  "rules": {
+    "import/extensions": "off",
+    "react/prop-types": "off",
+    "no-plusplus": "off"
+  }
+}
