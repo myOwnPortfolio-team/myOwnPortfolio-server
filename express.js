@@ -24,13 +24,7 @@ const slugConfig = {
   replacement: '_',
 };
 
-const runDocker = (res, configName) => {
-  const configPath = `${configDir}/${configName}`;
-  const webPath = `${webDir}/${configName}`;
-  const containerName = `core-${configName}`;
-  if (fs.existsSync(webPath)) fs.removeSync(webPath);
-
-const server = app.listen(port, host, () => {
+const server = app.listen(port, hostname, () => {
   winston.log('info', 'Server listening : ', {
     date: new Date(),
     address: server.address().address,
@@ -38,7 +32,12 @@ const server = app.listen(port, host, () => {
   });
 });
 
-app.post('/portfolio', (req, res) => {
+const runDocker = (res, configName) => {
+  const configPath = `${configDir}/${configName}`;
+  const webPath = `${webDir}/${configName}`;
+  const containerName = `core-${configName}`;
+  if (fs.existsSync(webPath)) fs.removeSync(webPath);
+
   childProcess.exec(
     `docker run --name=${containerName} --volume ${configPath}:/root/app/json_config --volume ${webPath}:/root/dist macbootglass/myownportfolio-core`,
     (error, stdout, stderr) => {
@@ -92,10 +91,6 @@ const createPorfolioConfiguration = (config, configName) => {
 
 app.use(bodyParser.json());
 app.use('/', express.static(webDir));
-
-app.listen(port, () => {
-  console.log(`Server listening on port ${port} !`);
-});
 
 app.post('/portfolio', (req, res) => {
   const config = req.body;
