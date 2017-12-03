@@ -7,6 +7,7 @@ const fs = require('fs-extra');
 const slug = require('slug');
 
 const app = express();
+const hostname = 'localhost';
 const port = 3000;
 const pwd = process.cwd();
 const configDir = `${pwd}/dist/config`;
@@ -33,7 +34,7 @@ const runDocker = (res, configName) => {
       });
       else res.json({
         status: 1,
-        message: stdout,
+        message: `http://${hostname}:${port}/${configName}`,
       });
     },
   );
@@ -74,6 +75,7 @@ const createPorfolioConfiguration = (config, configName) => {
 };
 
 app.use(bodyParser.json());
+app.use('/', express.static(webDir));
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port} !`);
