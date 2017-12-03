@@ -1,10 +1,17 @@
-/* eslint no-console: "off", curly: "off" */
+/* eslint curly: "off" */
+
+require('./auth/client_auth'); // WebSocket Server
 
 const express = require('express');
 const bodyParser = require('body-parser');
 const childProcess = require('child_process');
 const fs = require('fs-extra');
 const slug = require('slug');
+const winston = require('winston');
+
+if (process.env.LOG_LEVEL) {
+  winston.level = process.env.LOG_LEVEL;
+}
 
 const app = express();
 const hostname = 'localhost';
@@ -23,6 +30,15 @@ const runDocker = (res, configName) => {
   const containerName = `core-${configName}`;
   if (fs.existsSync(webPath)) fs.removeSync(webPath);
 
+const server = app.listen(port, host, () => {
+  winston.log('info', 'Server listening : ', {
+    date: new Date(),
+    address: server.address().address,
+    port: server.address().port,
+  });
+});
+
+app.post('/portfolio', (req, res) => {
   childProcess.exec(
     `docker run --name=${containerName} --volume ${configPath}:/root/app/json_config --volume ${webPath}:/root/dist macbootglass/myownportfolio-core`,
     (error, stdout, stderr) => {
