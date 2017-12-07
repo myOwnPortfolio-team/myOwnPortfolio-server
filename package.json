@@ -9,6 +9,7 @@
   "author": "Thibault THEOLOGIEN <thibault.theologien@insa-rouen.fr>",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.17.1",
     "body-parser": "^1.18.2",
     "eslint": "^4.12.1",
     "eslint-config-airbnb": "^16.1.0",
@@ -18,7 +19,7 @@
     "express": "^4.16.2",
     "fs-extra": "^4.0.2",
     "slug": "^0.9.1",
-    "winston": "^2.4.0",
-    "websocket": "^1.0.25"
+    "websocket": "^1.0.25",
+    "winston": "^2.4.0"
   }
 }

@@ -8,10 +8,12 @@ const childProcess = require('child_process');
 const fs = require('fs-extra');
 const slug = require('slug');
 const winston = require('winston');
+const githubAuth = require('./auth/github_auth');
 
 if (process.env.LOG_LEVEL) {
   winston.level = process.env.LOG_LEVEL;
 }
+winston.level = 'debug';
 
 const app = express();
 const hostname = 'localhost';
@@ -89,8 +91,13 @@ const createPorfolioConfiguration = (config, configName) => {
   fs.writeJsonSync(`${path}/module_list.json`, moduleList);
 };
 
+// Server configuration
+app.enable('trust proxy');
+
+// Server routes
 app.use(bodyParser.json());
 app.use('/', express.static(webDir));
+app.use(githubAuth);
 
 app.post('/portfolio', (req, res) => {
   const config = req.body;
