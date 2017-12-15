@@ -2,8 +2,9 @@
   "name": "myownportfolio-server",
   "version": "0.0.1",
   "description": "the server side of the project myownportfolio",
-  "main": "index.js",
+  "main": "express.js",
   "scripts": {
+    "start": "node express.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Thibault THEOLOGIEN <thibault.theologien@insa-rouen.fr>",
