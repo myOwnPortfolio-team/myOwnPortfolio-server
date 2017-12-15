@@ -12,7 +12,6 @@ const GITHUB_PATH = '/login/oauth/access_token';
 
 // Github authentication callback
 // Call : https://github.com/login/oauth/authorize?scope=public_repos&client_id=CLIENT_ID
-// Call : https://github.com/login/oauth/authorize?scope=public_repos&client_id=7c622518aba80de479d3
 router.get('/auth/github/callback/*', (req, res) => {
   const clientIP = req.ip;
   const githubCode = req.query.code;
@@ -33,8 +32,8 @@ router.get('/auth/github/callback/*', (req, res) => {
   const data = {
     // client_id: 'CLIENT_ID',
     // client_secret: 'CLIENT_SECRET',
-    client_id: '7c622518aba80de479d3',
-    client_secret: 'f2adae7bacc9b4f3cf401750c62c2189e3575537',
+    client_id: process.env.MOP_SERVER_CLIENT_ID,
+    client_secret: process.env.MOP_SERVER_CLIENT_SECRET,
     code: githubCode,
   };
 
