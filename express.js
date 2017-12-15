@@ -4,92 +4,42 @@ require('./auth/client_auth'); // WebSocket Server
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const childProcess = require('child_process');
-const fs = require('fs-extra');
-const slug = require('slug');
 const winston = require('winston');
-const githubAuth = require('./auth/github_auth');
+const portfolioActions = require('./portfolio/actions');
+const githubAuthRoutes = require('./auth/github_auth');
 
 if (process.env.LOG_LEVEL) {
   winston.level = process.env.LOG_LEVEL;
+} else {
+  winston.level = 'debug';
 }
-winston.level = 'debug';
 
 const app = express();
 const hostname = 'localhost';
 const port = 3000;
 const pwd = process.cwd();
-const configDir = `${pwd}/dist/config`;
 const webDir = `${pwd}/dist/web`;
+const configDir = `${pwd}/dist/config`;
 const slugConfig = {
   lower: true,
   replacement: '_',
 };
 
+const portfolioRoutes = portfolioActions(
+  hostname,
+  port,
+  configDir,
+  webDir,
+  slugConfig,
+);
+
 const server = app.listen(port, hostname, () => {
-  winston.log('info', 'Server listening : ', {
+  winston.log('info', 'Server listening', {
     date: new Date(),
     address: server.address().address,
     port: server.address().port,
   });
 });
-
-const runDocker = (res, configName) => {
-  const configPath = `${configDir}/${configName}`;
-  const webPath = `${webDir}/${configName}`;
-  const containerName = `core-${configName}`;
-  if (fs.existsSync(webPath)) fs.removeSync(webPath);
-
-  childProcess.exec(
-    `docker run --name=${containerName} --volume ${configPath}:/root/app/json_config --volume ${webPath}:/root/dist macbootglass/myownportfolio-core`,
-    (error, stdout, stderr) => {
-      childProcess.exec(`docker rm ${containerName}`);
-
-      if (error) res.json({
-        status: 0,
-        message: stderr,
-      });
-      else res.json({
-        status: 1,
-        message: `http://${hostname}:${port}/${configName}`,
-      });
-    },
-  );
-};
-
-const createModuleConfiguration = (obj, path, moduleName) => {
-  fs.writeJsonSync(`${path}/content/${moduleName}.json`, obj.content);
-  fs.writeJsonSync(`${path}/properties/${moduleName}.json`, obj.properties);
-  fs.writeJsonSync(`${path}/style/${moduleName}.json`, obj.style);
-};
-
-const createPorfolioConfiguration = (config, configName) => {
-  const path = `${configDir}/${configName}`;
-
-  if (fs.existsSync(path)) fs.removeSync(path);
-  fs.mkdirsSync(path);
-  fs.writeJsonSync(`${path}/app_properties.json`, config.app_properties);
-  fs.mkdirsSync(`${path}/content`);
-  fs.mkdirsSync(`${path}/properties`);
-  fs.mkdirsSync(`${path}/style`);
-
-  const moduleList = [];
-  for (let i = 0; i < config.modules.length; i++) {
-    const module = config.modules[i];
-    const formattedModuleName = slug(module.name, slugConfig);
-
-    createModuleConfiguration(module, path, formattedModuleName);
-    moduleList.push({
-      name: module.name,
-      module_path: `./modules/${module.type}/index.jsx`,
-      content_path: `./json_config/content/${formattedModuleName}.json`,
-      properties_path: `./json_config/properties/${formattedModuleName}.json`,
-      style_path: `./json_config/style/${formattedModuleName}.json`,
-      referenced: module.referenced,
-    });
-  }
-  fs.writeJsonSync(`${path}/module_list.json`, moduleList);
-};
 
 // Server configuration
 app.enable('trust proxy');
@@ -97,12 +47,5 @@ app.enable('trust proxy');
 // Server routes
 app.use(bodyParser.json());
 app.use('/', express.static(webDir));
-app.use(githubAuth);
-
-app.post('/portfolio', (req, res) => {
-  const config = req.body;
-  const configFormattedName = slug(config.name, slugConfig);
-
-  createPorfolioConfiguration(config, configFormattedName);
-  runDocker(res, configFormattedName);
-});
+app.use(githubAuthRoutes);
+app.use(portfolioRoutes);
