@@ -15,7 +15,7 @@ if (process.env.LOG_LEVEL) {
 }
 
 const app = express();
-const hostname = 'localhost';
+const hostname = '0.0.0.0';
 const port = 3000;
 const pwd = process.cwd();
 const webDir = `${pwd}/dist/web`;

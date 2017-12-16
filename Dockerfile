@@ -1,9 +1,9 @@
 FROM macbootglass/myownportfolio-env
 MAINTAINER thibault.theologien@insa-rouen.fr
 
-VOLUME /var/run/docker.sock
-VOLUME /bin/docker
 VOLUME /root/dist
+
+EXPOSE 3000
 
 ENV MOP_SERVER_CLIENT_ID=id
 ENV MOP_SERVER_CLIENT_SECRET=secret
