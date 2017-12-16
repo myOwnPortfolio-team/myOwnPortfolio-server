@@ -1,5 +1,10 @@
-host: localhost
-port: 3000
+server:
+  web:
+    host: localhost
+    port: 3000
+  websocket:
+    host: localhost
+    port: 1337
 client:
   id: 0
   secret: secret

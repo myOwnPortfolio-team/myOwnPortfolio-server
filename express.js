@@ -28,14 +28,14 @@ const slugConfig = {
 };
 
 const portfolioRoutes = portfolioActions(
-  config.host,
-  config.port,
+  config.server.web.host,
+  config.server.web.port,
   configDir,
   webDir,
   slugConfig,
 );
 
-const server = app.listen(config.port, config.host, () => {
+const server = app.listen(config.server.web.port, config.server.web.host, () => {
   winston.log('info', 'Server listening', {
     date: new Date(),
     address: server.address().address,

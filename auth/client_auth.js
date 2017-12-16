@@ -2,6 +2,10 @@ const winston = require('winston');
 
 const WebSocketServer = require('websocket').server;
 const http = require('http');
+const loadConfiguration = require('../utils/loadConfiguration');
+
+const config = loadConfiguration('./config.yml');
+console.log(config);
 
 const HOST = 'localhost';
 const PORT = 1337;
