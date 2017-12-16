@@ -4,6 +4,7 @@ MAINTAINER thibault.theologien@insa-rouen.fr
 VOLUME /root/dist
 
 EXPOSE 3000
+EXPOSE 1337
 
 ENV MOP_SERVER_WEB_HOST=0.0.0.0
 ENV MOP_SERVER_WEB_PORT=3000
