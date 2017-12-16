@@ -21,5 +21,6 @@ COPY ./auth /root/auth
 COPY ./portfolio /root/portfolio
 COPY ./utils /root/utils
 COPY ./express.js /root
+COPY ./config.yml /root
 
 CMD npm run start
