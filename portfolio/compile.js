@@ -4,10 +4,10 @@ const childProcess = require('child_process');
 const fs = require('fs-extra');
 const slug = require('slug');
 
-const runDocker = (res, hostname, port, webDir, configDir, configName) => {
-  const configPath = `${configDir}/${configName}`;
-  const webPath = `${webDir}/${configName}`;
-  const containerName = `core-${configName}`;
+const runDocker = (res, hostname, port, webDir, configDir, userID) => {
+  const configPath = `${configDir}/${userID}`;
+  const webPath = `${webDir}/${userID}`;
+  const containerName = `core-${userID}`;
   if (fs.existsSync(webPath)) fs.removeSync(webPath);
 
   childProcess.exec(
@@ -17,15 +17,15 @@ const runDocker = (res, hostname, port, webDir, configDir, configName) => {
 
       if (error) {
         const response = {
-          status: 0,
+          status: 500,
           message: stderr,
         };
         winston.log('error', 'Error while running docker image', response);
         res.json(response);
       } else {
         const response = {
-          status: 1,
-          message: `http://${hostname}:${port}/${configName}`,
+          status: 200,
+          message: `http://${hostname}:${port}/${userID}`,
         };
         winston.log('info', 'Docker successfully ran', response);
         res.json(response);
@@ -40,9 +40,7 @@ const createModuleConfiguration = (obj, path, moduleName) => {
   fs.writeJsonSync(`${path}/style/${moduleName}.json`, obj.style);
 };
 
-const createPorfolioConfiguration = (config, configDir, configName, slugConfig) => {
-  const path = `${configDir}/${configName}`;
-
+const createPorfolioConfiguration = (config, path, slugConfig) => {
   if (fs.existsSync(path)) fs.removeSync(path);
   fs.mkdirsSync(path);
   fs.writeJsonSync(`${path}/app_properties.json`, config.app_properties);
@@ -66,6 +64,7 @@ const createPorfolioConfiguration = (config, configDir, configName, slugConfig) 
     });
   }
   fs.writeJsonSync(`${path}/module_list.json`, moduleList);
+  fs.writeJsonSync(`${path}/saved_config.json`, config);
 };
 
 module.exports = {
