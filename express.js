@@ -5,6 +5,9 @@ require('./auth/client_auth'); // WebSocket Server
 const express = require('express');
 const bodyParser = require('body-parser');
 const winston = require('winston');
+const YAML = require('yamljs');
+const isDocker = require('yamljs');
+
 const portfolioActions = require('./portfolio/actions');
 const githubAuthRoutes = require('./auth/github_auth');
 
@@ -14,9 +17,17 @@ if (process.env.LOG_LEVEL) {
   winston.level = 'debug';
 }
 
+const loadConfiguration = (path) => {
+  const configuration = YAML.load(path);
+  if (isDocker()) {
+    configuration.host = process.env.MOP_SERVER_HOST;
+    configuration.port = process.env.MOP_SERVER_PORT;
+  }
+  return configuration;
+};
+
 const app = express();
-const hostname = '0.0.0.0';
-const port = 3000;
+const config = loadConfiguration('./config.yml');
 const pwd = process.cwd();
 const webDir = `${pwd}/dist/web`;
 const configDir = `${pwd}/dist/config`;
@@ -26,14 +37,14 @@ const slugConfig = {
 };
 
 const portfolioRoutes = portfolioActions(
-  hostname,
-  port,
+  config.host,
+  config.port,
   configDir,
   webDir,
   slugConfig,
 );
 
-const server = app.listen(port, hostname, () => {
+const server = app.listen(config.port, config.host, () => {
   winston.log('info', 'Server listening', {
     date: new Date(),
     address: server.address().address,
