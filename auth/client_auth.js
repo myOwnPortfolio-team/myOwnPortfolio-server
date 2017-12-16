@@ -5,14 +5,8 @@ const http = require('http');
 const loadConfiguration = require('../utils/loadConfiguration');
 
 const config = loadConfiguration('./config.yml');
-console.log(config);
 
-const HOST = 'localhost';
-const PORT = 1337;
-const SERVER_PORT = 3000;
-const CLIENT_ID = process.env.MOP_SERVER_CLIENT_ID;
-
-const noClientIDError = () => 'No client id defined. Please set the "MOP_SERVER_CLIENT_ID" environment variable.';
+const noClientIDError = () => 'No client id defined. Please set the environment variable.';
 
 class MOPWebSocketServer {
   constructor(host, port, serverPort, clientID) {
@@ -27,11 +21,15 @@ class MOPWebSocketServer {
     }
 
     this.server = http.createServer(() => null);
-    this.server.listen(PORT, HOST, () => winston.log('info', 'WebSocket server listening : ', {
-      date: new Date(),
-      address: HOST,
-      port: PORT,
-    }));
+    this.server.listen(
+      config.server.websocket.port,
+      config.server.websocket.host,
+      () => winston.log('info', 'WebSocket server listening : ', {
+        date: new Date(),
+        address: config.server.websocket.host,
+        port: config.server.websocket.port,
+      }),
+    );
     this.wsServer = new WebSocketServer({
       httpServer: this.server,
     });
@@ -138,4 +136,9 @@ class MOPWebSocketServer {
   }
 }
 
-module.exports = new MOPWebSocketServer(HOST, PORT, SERVER_PORT, CLIENT_ID);
+module.exports = new MOPWebSocketServer(
+  config.server.websocket.host,
+  config.server.websocket.port,
+  config.server.web.port,
+  config.client.id,
+);

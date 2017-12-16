@@ -1,12 +1,13 @@
 const winston = require('winston');
 const axios = require('axios');
+const loadConfiguration = require('../utils/loadConfiguration');
 
+const config = loadConfiguration('./config.yml');
 const wsServer = require('./client_auth');
 
 const express = require('express');
 
 const router = express.Router();
-
 const GITHUB_URL = 'https://github.com';
 const GITHUB_PATH = '/login/oauth/access_token';
 
@@ -32,8 +33,8 @@ router.get('/auth/github/callback/*', (req, res) => {
   const data = {
     // client_id: 'CLIENT_ID',
     // client_secret: 'CLIENT_SECRET',
-    client_id: process.env.MOP_SERVER_CLIENT_ID,
-    client_secret: process.env.MOP_SERVER_CLIENT_SECRET,
+    client_id: config.client.id,
+    client_secret: config.client.secret,
     code: githubCode,
   };
 
