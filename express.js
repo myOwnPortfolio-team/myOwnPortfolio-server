@@ -5,26 +5,17 @@ require('./auth/client_auth'); // WebSocket Server
 const express = require('express');
 const bodyParser = require('body-parser');
 const winston = require('winston');
-const YAML = require('yamljs');
-const isDocker = require('yamljs');
+const loadConfiguration = require('./utils/loadConfiguration');
 
 const portfolioActions = require('./portfolio/actions');
 const githubAuthRoutes = require('./auth/github_auth');
+
 
 if (process.env.LOG_LEVEL) {
   winston.level = process.env.LOG_LEVEL;
 } else {
   winston.level = 'debug';
 }
-
-const loadConfiguration = (path) => {
-  const configuration = YAML.load(path);
-  if (isDocker()) {
-    configuration.host = process.env.MOP_SERVER_HOST;
-    configuration.port = process.env.MOP_SERVER_PORT;
-  }
-  return configuration;
-};
 
 const app = express();
 const config = loadConfiguration('./config.yml');
