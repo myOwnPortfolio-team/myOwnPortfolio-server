@@ -1,5 +1,5 @@
 const YAML = require('yamljs');
-const isDocker = require('yamljs');
+const isDocker = require('is-docker');
 
 module.exports = (path) => {
   const configuration = YAML.load(path);
