@@ -27,6 +27,8 @@ const slugConfig = {
   replacement: '_',
 };
 
+winston.log('info', 'Loaded configuration', config);
+
 const portfolioRoutes = portfolioActions(
   config.server.web.host,
   config.server.web.port,
