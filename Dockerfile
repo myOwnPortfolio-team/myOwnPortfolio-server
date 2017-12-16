@@ -19,6 +19,7 @@ RUN npm install
 
 COPY ./auth /root/auth
 COPY ./portfolio /root/portfolio
+COPY ./utils /root/utils
 COPY ./express.js /root
 
 CMD npm run start
