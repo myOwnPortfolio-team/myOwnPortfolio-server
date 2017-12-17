@@ -5,6 +5,9 @@ server:
   websocket:
     host: localhost
     port: 1337
+  dist:
+    config: dist/config
+    web: dist/web
 client:
   id: 0
   secret: secret

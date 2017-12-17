@@ -19,9 +19,6 @@ if (process.env.LOG_LEVEL) {
 
 const app = express();
 const config = loadConfiguration('./config.yml');
-const pwd = process.cwd();
-const webDir = `${pwd}/dist/web`;
-const configDir = `${pwd}/dist/config`;
 const slugConfig = {
   lower: true,
   replacement: '_',
@@ -32,8 +29,8 @@ winston.log('info', 'Loaded configuration', config);
 const portfolioRoutes = portfolioActions(
   config.server.web.host,
   config.server.web.port,
-  configDir,
-  webDir,
+  config.server.dist.config,
+  config.server.dist.web,
   slugConfig,
 );
 
@@ -50,6 +47,6 @@ app.enable('trust proxy');
 
 // Server routes
 app.use(bodyParser.json());
-app.use('/', express.static(webDir));
+app.use('/', express.static(config.server.dist.web));
 app.use(githubAuthRoutes);
 app.use(portfolioRoutes);
