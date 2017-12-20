@@ -45,19 +45,23 @@ const routes = (hostname, port, configDir, webDir, slugConfig) => {
       .then((id) => {
         const path = `${configDir}/${id}`;
 
-        fs.readJSONSync(`${path}/saved_config.json`, (err, obj) => {
-          if (err) {
-            res.json({
-              status: 400,
-              message: err,
-            });
-          } else {
-            res.json({
-              status: 200,
-              message: obj,
-            });
-          }
-        });
+        try {
+          fs.readJSON(`${path}/saved_config.json`, (err, obj) => {
+            if (err) {
+              res.json({
+                status: 400,
+                message: err,
+              });
+            } else {
+              res.json({
+                status: 200,
+                message: obj,
+              });
+            }
+          });
+        } catch (error) {
+          winston.log('debug', 'ERROR', error);
+        }
       })
       .catch(err => res.json({
         status: 400,
