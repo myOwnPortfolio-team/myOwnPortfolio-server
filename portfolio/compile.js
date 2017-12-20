@@ -4,9 +4,10 @@ const childProcess = require('child_process');
 const fs = require('fs-extra');
 const slug = require('slug');
 
-const runDocker = (res, hostname, port, webDir, configDir, configName) => {
-  const configPath = `${configDir}/${configName}`;
-  const webPath = `${webDir}/${configName}`;
+const runDocker = (res, appConfig, config) => {
+  const configName = slug(config.name, appConfig.slug);
+  const configPath = `${appConfig.server.dist.config}/${configName}`;
+  const webPath = `${appConfig.server.dist.web}/${configName}`;
   const containerName = `core-${configName}`;
   if (fs.existsSync(webPath)) fs.removeSync(webPath);
 
@@ -25,7 +26,7 @@ const runDocker = (res, hostname, port, webDir, configDir, configName) => {
       } else {
         const response = {
           status: 1,
-          message: `http://${hostname}:${port}/${configName}`,
+          message: `http://${appConfig.global.hostname}:${appConfig.server.web.port}/${configName}`,
         };
         winston.log('info', 'Docker successfully ran', response);
         res.json(response);
@@ -40,8 +41,8 @@ const createModuleConfiguration = (obj, path, moduleName) => {
   fs.writeJsonSync(`${path}/style/${moduleName}.json`, obj.style);
 };
 
-const createPorfolioConfiguration = (config, configDir, configName, slugConfig) => {
-  const path = `${configDir}/${configName}`;
+const createPorfolioConfiguration = (config, appConfig) => {
+  const path = `${appConfig.server.dist.config}/${slug(config.name, appConfig.slug)}`;
 
   if (fs.existsSync(path)) fs.removeSync(path);
   fs.mkdirsSync(path);
@@ -53,7 +54,7 @@ const createPorfolioConfiguration = (config, configDir, configName, slugConfig) 
   const moduleList = [];
   for (let i = 0; i < config.modules.length; i++) {
     const module = config.modules[i];
-    const formattedModuleName = slug(module.name, slugConfig);
+    const formattedModuleName = slug(module.name, appConfig.slug);
 
     createModuleConfiguration(module, path, formattedModuleName);
     moduleList.push({

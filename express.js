@@ -6,10 +6,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const winston = require('winston');
 const loadConfiguration = require('./utils/loadConfiguration');
-
 const portfolioActions = require('./portfolio/actions');
 const githubAuthRoutes = require('./auth/github_auth');
-
 
 if (process.env.LOG_LEVEL) {
   winston.level = process.env.LOG_LEVEL;
@@ -19,20 +17,10 @@ if (process.env.LOG_LEVEL) {
 
 const app = express();
 const config = loadConfiguration('./config.yml');
-const slugConfig = {
-  lower: true,
-  replacement: '_',
-};
 
 winston.log('info', 'Loaded configuration', config);
 
-const portfolioRoutes = portfolioActions(
-  config.server.web.host,
-  config.server.web.port,
-  config.server.dist.config,
-  config.server.dist.web,
-  slugConfig,
-);
+const portfolioRoutes = portfolioActions(config);
 
 const server = app.listen(config.server.web.port, config.server.web.host, () => {
   winston.log('info', 'Server listening', {
