@@ -11,7 +11,7 @@ const routes = (hostname, port, configDir, webDir, slugConfig) => {
 
   router.post('/portfolio', (req, res) => {
     const config = req.body;
-    const { token } = req.params;
+    const { token } = req.query;
 
     github.getUserID(token)
       .then((id) => {
@@ -44,18 +44,19 @@ const routes = (hostname, port, configDir, webDir, slugConfig) => {
     github.getUserID(token)
       .then((id) => {
         const path = `${configDir}/${id}`;
+
         fs.readJSONSync(`${path}/saved_config.json`, (err, obj) => {
           if (err) {
             res.json({
               status: 400,
               message: err,
             });
+          } else {
+            res.json({
+              status: 200,
+              message: obj,
+            });
           }
-
-          res.json({
-            status: 200,
-            message: obj,
-          });
         });
       })
       .catch(err => res.json({

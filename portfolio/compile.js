@@ -10,6 +10,7 @@ const runDocker = (res, hostname, port, webDir, configDir, userID) => {
   const containerName = `core-${userID}`;
   if (fs.existsSync(webPath)) fs.removeSync(webPath);
 
+  winston.log('debug', 'Start docker');
   childProcess.exec(
     `docker run --name=${containerName} --volume ${configPath}:/root/app/json_config --volume ${webPath}:/root/dist macbootglass/myownportfolio-core`,
     (error, stdout, stderr) => {
@@ -18,7 +19,7 @@ const runDocker = (res, hostname, port, webDir, configDir, userID) => {
       if (error) {
         const response = {
           status: 500,
-          message: stderr,
+          message: error,
         };
         winston.log('error', 'Error while running docker image', response);
         res.json(response);
