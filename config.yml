@@ -5,9 +5,6 @@ server:
   websocket:
     host: localhost
     port: 1337
-  dist:
-    web: web
-    config: config
 client:
   id: 0
   secret: secret
@@ -16,4 +13,4 @@ slug:
   replacement: _
 global:
   hostname: localhost
-  dist: dist
+  volume: dist

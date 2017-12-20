@@ -35,6 +35,6 @@ app.enable('trust proxy');
 
 // Server routes
 app.use(bodyParser.json());
-app.use('/', express.static(config.server.dist.web));
+app.use('/', express.static(`${config.global.volume}/web`));
 app.use(githubAuthRoutes);
 app.use(portfolioRoutes);

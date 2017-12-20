@@ -4,18 +4,23 @@ const childProcess = require('child_process');
 const fs = require('fs-extra');
 const slug = require('slug');
 
+const pwd = process.cwd();
+const webPath = `${pwd}/dist/web`;
+const configPath = `${pwd}/dist/config`;
+
 const runDocker = (res, appConfig, config) => {
   const configName = slug(config.name, appConfig.slug);
-  const configPath = `${appConfig.server.dist.config}/${configName}`;
-  const webPath = `${appConfig.server.dist.web}/${configName}`;
   const containerName = `core-${configName}`;
-  if (fs.existsSync(webPath)) fs.removeSync(webPath);
+  if (fs.existsSync(`${webPath}/${configName}`)) fs.removeSync(`${webPath}/${configName}`);
 
   childProcess.exec(
-    `docker run --name=${containerName} --volume ${configPath}:/root/app/json_config --volume ${webPath}:/root/dist macbootglass/myownportfolio-core`,
+    `docker run \
+      --name=${containerName} \
+      --volume ${appConfig.global.volume}/config/${configName}:/root/app/json_config \
+      --volume ${appConfig.global.volume}/web/${configName}:/root/dist \
+      macbootglass/myownportfolio-core`,
     (error, stdout, stderr) => {
       childProcess.exec(`docker rm ${containerName}`);
-
       if (error) {
         const response = {
           status: 0,
@@ -42,7 +47,7 @@ const createModuleConfiguration = (obj, path, moduleName) => {
 };
 
 const createPorfolioConfiguration = (config, appConfig) => {
-  const path = `${appConfig.server.dist.config}/${slug(config.name, appConfig.slug)}`;
+  const path = `${configPath}/${slug(config.name, appConfig.slug)}`;
 
   if (fs.existsSync(path)) fs.removeSync(path);
   fs.mkdirsSync(path);
