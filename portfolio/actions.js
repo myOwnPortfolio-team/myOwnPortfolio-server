@@ -12,6 +12,7 @@ const routes = (hostname, port, configDir, webDir, slugConfig) => {
   router.post('/portfolio', (req, res) => {
     const config = req.body;
     const { token } = req.query;
+    winston.log('debug', 'BODY', config);
 
     github.getUserID(token)
       .then((id) => {
