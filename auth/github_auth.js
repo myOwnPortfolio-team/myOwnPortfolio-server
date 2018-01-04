@@ -25,9 +25,7 @@ router.get('/auth/github/callback/*', (req, res) => {
 
   // Close tab for user (Only result is wanted)
   res.set('Content-Type', 'text/html');
-  res.send('<html>' +
-    '<body>Authentication success : <a href="javascript: window.top.close()">Close</a></body>' +
-    '</html>');
+  res.sendFile(`${(process.cwd())}/web/auth_success.html`);
 
   // Resend temporary code to GitHub to obtain access token
   const data = {

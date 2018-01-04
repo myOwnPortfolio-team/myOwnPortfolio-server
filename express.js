@@ -30,6 +30,8 @@ const server = app.listen(config.server.web.port, config.server.web.host, () => 
   });
 });
 
+app.use('/assets', express.static(`${process.cwd()}/web/assets`));
+
 // Server configuration
 app.enable('trust proxy');
 
