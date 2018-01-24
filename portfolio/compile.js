@@ -8,11 +8,12 @@ const pwd = process.cwd();
 const webPath = `${pwd}/dist/web`;
 const configPath = `${pwd}/dist/config`;
 
-const runDocker = (res, appConfig, config) => {
+const runDocker = (res, appConfig, config, id) => {
   const configName = slug(config.name, appConfig.slug);
   const containerName = `core-${configName}`;
-  if (fs.existsSync(`${webPath}/${configName}`)) fs.removeSync(`${webPath}/${configName}`);
+  if (fs.existsSync(`${webPath}/${id}`)) fs.removeSync(`${webPath}/${id}`);
 
+  winston.log('debug', 'Start docker');
   childProcess.exec(
     `docker run \
       --name=${containerName} \
@@ -23,15 +24,15 @@ const runDocker = (res, appConfig, config) => {
       childProcess.exec(`docker rm ${containerName}`);
       if (error) {
         const response = {
-          status: 0,
-          message: stderr,
+          status: 500,
+          message: error,
         };
         winston.log('error', 'Error while running docker image', response);
         res.json(response);
       } else {
         const response = {
-          status: 1,
-          message: `http://${appConfig.global.hostname}:${appConfig.server.web.port}/${configName}`,
+          status: 200,
+          message: `http://${appConfig.global.hostname}:${appConfig.server.web.port}/${id}`,
         };
         winston.log('info', 'Docker successfully ran', response);
         res.json(response);
@@ -46,8 +47,8 @@ const createModuleConfiguration = (obj, path, moduleName) => {
   fs.writeJsonSync(`${path}/style/${moduleName}.json`, obj.style);
 };
 
-const createPorfolioConfiguration = (config, appConfig) => {
-  const path = `${configPath}/${slug(config.name, appConfig.slug)}`;
+const createPorfolioConfiguration = (config, appConfig, id) => {
+  const path = `${configPath}/${id}`;
 
   if (fs.existsSync(path)) fs.removeSync(path);
   fs.mkdirsSync(path);
@@ -72,6 +73,7 @@ const createPorfolioConfiguration = (config, appConfig) => {
     });
   }
   fs.writeJsonSync(`${path}/module_list.json`, moduleList);
+  fs.writeJsonSync(`${path}/saved_config.json`, config);
 };
 
 module.exports = {
