@@ -16,8 +16,10 @@ COPY package.json /root
 RUN npm install
 
 COPY ./auth /root/auth
+COPY ./github /root/github
 COPY ./portfolio /root/portfolio
 COPY ./utils /root/utils
+COPY ./web /root/web
 COPY ./express.js /root
 COPY ./config.yml /root
 
