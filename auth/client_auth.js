@@ -91,7 +91,7 @@ class MOPWebSocketServer {
             action: 'auth_link',
             authLink: 'https://github.com/login/oauth/authorize' +
               `?client_id=${this.clientID}&scope=public_repo%20read:user` +
-              `&redirect_uri=http://${this.host}:${this.serverPort}/auth/github/callback/${message.key}`,
+              `&redirect_uri=http://${config.global.hostname}:${this.serverPort}/auth/github/callback/${message.key}`,
           }));
         } else {
           connection.sendUTF(JSON.stringify({
