@@ -3,7 +3,7 @@ server:
     host: 0.0.0.0
     port: 3000
   websocket:
-    host: localhost
+    host: 0.0.0.0
     port: 1337
 client:
   id: 0
