@@ -32,7 +32,7 @@ const runDocker = (res, appConfig, config, id) => {
       } else {
         const response = {
           status: 200,
-          message: `http://${appConfig.global.hostname}:${appConfig.server.web.port}/${id}`,
+          message: id,
         };
         winston.log('info', 'Docker successfully ran', response);
         res.json(response);
