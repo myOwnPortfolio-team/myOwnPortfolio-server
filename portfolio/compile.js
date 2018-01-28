@@ -17,10 +17,10 @@ const runDocker = (res, appConfig, config, id) => {
   childProcess.exec(
     `docker run \
       --name=${containerName} \
-      --volume ${appConfig.global.volume}/config/${configName}:/root/app/json_config \
-      --volume ${appConfig.global.volume}/web/${configName}:/root/dist \
+      --volume ${appConfig.global.volume}/config/${id}:/root/app/json_config \
+      --volume ${appConfig.global.volume}/web/${id}:/root/dist \
       macbootglass/myownportfolio-core`,
-    (error, stdout, stderr) => {
+    (error) => {
       childProcess.exec(`docker rm ${containerName}`);
       if (error) {
         const response = {
